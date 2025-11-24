@@ -9,6 +9,7 @@ public record CreateUserRequest
     [Required, EmailAddress, MaxLength(255)]
     string Email,
     [Required]
-    string PasswordHash
+    string PasswordHash,
+    int type
 );
 

@@ -16,12 +16,10 @@ public class WaveDbContext  : DbContext
 
       protected override void OnModelCreating(ModelBuilder modelBuilder)
       {
-          //base.OnModelCreating(modelBuilder);
-
-          //modelBuilder.HasDefaultSchema("wave");
-
           modelBuilder.ApplyConfiguration(new UserConfiguration());
           modelBuilder.ApplyConfiguration(new PostConfiguration());
           modelBuilder.ApplyConfiguration(new CommentConfiguration());
+          
+          base.OnModelCreating(modelBuilder);
       }
 }

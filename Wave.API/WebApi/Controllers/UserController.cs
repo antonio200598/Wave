@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Wave.API.Application.DTOs;
 using Wave.API.Domain.Entities;
+using Wave.API.Domain.Enums;
 using Wave.API.Domain.Interfaces;
 
 namespace Wave.API.WebApi.Controllers;
@@ -17,12 +18,18 @@ public class UserController : ControllerBase
     [HttpPost("create")]
     public async Task<IActionResult> CreateUser(CreateUserRequest request)
     {
-        var newUser = new User
+
+        var newUser = await _userRepository.GetByEmail(request.Email);
+
+        if(newUser != null)
+            return Conflict("A user with this email already exists.");
+
+        newUser = new User
         {
             Name = request.Name,
             Email = request.Email,
             PasswordHash = request.PasswordHash,
-            Type = Domain.Enums.UserType.Regular,
+            Type = Enum.IsDefined(typeof(UserType), request.type) ? (UserType)request.type : UserType.Regular,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };

@@ -12,7 +12,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
 
         builder.HasKey(x => x.Id);
 
-        builder.Property(x => x.Id).HasColumnName("id");
+        builder.Property(x => x.Id).HasColumnName("id").ValueGeneratedOnAdd(); ;
         builder.Property(x => x.Name).HasColumnName("name").HasMaxLength(255).IsRequired();
         builder.Property(x => x.Email).HasColumnName("email").HasMaxLength(255).IsRequired();
         builder.Property(x => x.PasswordHash).HasColumnName("password_hash").HasMaxLength(255).IsRequired();
@@ -27,6 +27,6 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .HasColumnName("updated_at")
             .HasColumnType("timestamp with time zone");
 
-        builder.HasIndex(x => x.Email).IsUnique();
+        builder.HasIndex(x => x.Email).HasDatabaseName("ix_user_email").IsUnique();
     }
 }

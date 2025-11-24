@@ -9,10 +9,7 @@ public class UserRepository : IUserRepository
 {
     private readonly WaveDbContext _context;
 
-    public UserRepository(WaveDbContext context)
-    {
-        _context = context;
-    }
+    public UserRepository(WaveDbContext context) => _context = context;
 
     public async Task Add(User user) => await _context.User.AddAsync(user);
 
