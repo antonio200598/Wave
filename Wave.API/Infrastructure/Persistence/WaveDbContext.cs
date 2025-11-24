@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Wave.API.Domain.Entities;
+using Wave.API.Infrastructure.Persistence.Configurations;
 
 namespace Wave.API.Infrastructure.Persistence;
 
@@ -15,25 +16,12 @@ public class WaveDbContext  : DbContext
 
       protected override void OnModelCreating(ModelBuilder modelBuilder)
       {
-          base.OnModelCreating(modelBuilder);
+          //base.OnModelCreating(modelBuilder);
 
-          modelBuilder.HasDefaultSchema("wave");
+          //modelBuilder.HasDefaultSchema("wave");
 
-          modelBuilder.Entity<User>(entity =>
-          {
-              entity.HasKey(e => e.Id);
-              entity.HasMany(e => e.Posts).WithOne(p => p.User);
-              entity.HasMany(e => e.Comments).WithOne(c => c.User);
-          });
-          modelBuilder.Entity<Post>(entity =>
-          {
-              entity.HasKey(e => e.Id);
-              entity.HasMany(e => e.Comments).WithOne(c => c.Post);
-          });
-          modelBuilder.Entity<Comment>(entity =>
-          {
-              entity.HasKey(e => e.Id);
-          });
-  }
-
+          modelBuilder.ApplyConfiguration(new UserConfiguration());
+          modelBuilder.ApplyConfiguration(new PostConfiguration());
+          modelBuilder.ApplyConfiguration(new CommentConfiguration());
+      }
 }

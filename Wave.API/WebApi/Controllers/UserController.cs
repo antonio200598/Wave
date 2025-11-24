@@ -19,10 +19,12 @@ public class UserController : ControllerBase
     {
         var newUser = new User
         {
-            Username = request.Name,
+            Name = request.Name,
             Email = request.Email,
             PasswordHash = request.PasswordHash,
-            CreatedAt = DateTime.Parse(request.CreatedAt),
+            Type = Domain.Enums.UserType.Regular,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
         };
 
         await _userRepository.Add(newUser);
@@ -49,7 +51,7 @@ public class UserController : ControllerBase
             return NotFound();
         
         if (!string.IsNullOrEmpty(request.UserName))
-            user.Username = request.UserName;
+            user.Name = request.UserName;
         
         if (!string.IsNullOrEmpty(request.Email))
             user.Email = request.Email;
