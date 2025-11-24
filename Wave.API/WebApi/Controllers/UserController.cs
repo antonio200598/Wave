@@ -66,10 +66,12 @@ public class UserController : ControllerBase
         if (!string.IsNullOrEmpty(request.PasswordHash))
             user.PasswordHash = request.PasswordHash;
 
+        user.UpdatedAt = DateTime.UtcNow;
+
         await _userRepository.Update(user);
         await _userRepository.SaveChanges();
         
-        return Ok(user);
+        return Ok("Informações alteradas com sucesso");
     }
 
     [HttpPost("delete/{id}")]

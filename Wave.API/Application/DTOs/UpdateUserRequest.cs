@@ -11,9 +11,6 @@ public record UpdateUserRequest
 
     string UserName,
 
-    string PasswordHash,
-    
-    [Required]
-    string UpdatedAt
+    string PasswordHash    
 );
 
