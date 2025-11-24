@@ -9,7 +9,5 @@ public record CreatePostRequest
     [Required]
     string Title,
     [Required]
-    string Content,
-    [Required]
-    string CreatedAt
+    string Content
 );

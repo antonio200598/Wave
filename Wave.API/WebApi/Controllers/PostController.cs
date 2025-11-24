@@ -21,7 +21,6 @@ public class PostController : ControllerBase
         {
             Title = request.Title,
             Content = request.Content,
-            CreatedAt = DateTime.Parse(request.CreatedAt),
             User = new User { Id = request.UserId }
         };
 

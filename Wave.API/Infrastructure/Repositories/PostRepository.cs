@@ -18,7 +18,7 @@ public class PostRepository : IPostRepository
 
     public async Task<Post?> GetById(long id) => await _context.Post.FirstOrDefaultAsync(p => p.Id == id);
 
-    public async Task<IEnumerable<Post>> GetByUserId(long userId) => await _context.Post.Where(p => p.User.Id == userId).ToListAsync();
+    public async Task<IEnumerable<Post>> GetByUserId(long userId) => await _context.Post.Where(p => p.UserId == userId).ToListAsync();
 
     public async Task Update(Post post) => _context.Post.Update(post);
 
