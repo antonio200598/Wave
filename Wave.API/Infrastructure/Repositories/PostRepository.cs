@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore;
+using System.Reflection.Metadata.Ecma335;
 using Wave.API.Domain.Entities;
 using Wave.API.Domain.Interfaces;
 using Wave.API.Infrastructure.Persistence;
@@ -8,43 +10,19 @@ public class PostRepository : IPostRepository
 {
     private readonly WaveDbContext _context;
 
-    public PostRepository(WaveDbContext context)
-    {
-      _context = context;
-    }
+    public PostRepository(WaveDbContext context) => _context = context;
 
-    public Task Add(Post post)
-    {
-      throw new NotImplementedException();
-    }
+    public async Task Add(Post post) => await _context.Post.AddAsync(post);
 
-    public Task Delete(Post post)
-    {
-      throw new NotImplementedException();
-    }
+    public async Task<IEnumerable<Post>> GetAll() => await _context.Post.ToListAsync();
 
-    public Task<IEnumerable<Post>> GetAll()
-    {
-      throw new NotImplementedException();
-    }
+    public async Task<Post?> GetById(long id) => await _context.Post.FirstOrDefaultAsync(p => p.Id == id);
 
-    public Task<Post?> GetById(long id)
-    {
-      throw new NotImplementedException();
-    }
+    public async Task<IEnumerable<Post>> GetByUserId(long userId) => await _context.Post.Where(p => p.User.Id == userId).ToListAsync();
 
-    public Task<IEnumerable<Post>> GetByUserId(long userId)
-    {
-      throw new NotImplementedException();
-    }
+    public async Task Update(Post post) => _context.Post.Update(post);
 
-    public Task SaveChanges()
-    {
-      throw new NotImplementedException();
-    }
+    public async Task Delete(Post post) => _context.Post.Remove(post);
 
-    public Task Update(Post post)
-    {
-      throw new NotImplementedException();
-    }
+    public async Task SaveChanges() => await _context.SaveChangesAsync();
 }

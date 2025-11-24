@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using Wave.API.Domain.Entities;
 using Wave.API.Domain.Interfaces;
 using Wave.API.Infrastructure.Persistence;
@@ -8,43 +9,19 @@ public class CommentRepository : ICommentRepository
 {
     private readonly WaveDbContext _context;
 
-    public CommentRepository(WaveDbContext context)
-    {
-        _context = context;
-    }
+    public CommentRepository(WaveDbContext context) => _context = context;
 
-    public Task Add(Comment comment)
-    {
-      throw new NotImplementedException();
-    }
+    public async Task Add(Comment comment) => await _context.Comments.AddAsync(comment);
 
-    public Task Delete(Comment comment)
-    {
-      throw new NotImplementedException();
-    }
+    public async Task<IEnumerable<Comment>> GetAll() => await _context.Comments.ToListAsync();
 
-    public Task<IEnumerable<Comment>> GetAll()
-    {
-      throw new NotImplementedException();
-    }
+    public async Task<Comment?> GetById(long id) => await _context.Comments.FirstOrDefaultAsync(c => c.Id == id);
 
-    public Task<Comment?> GetById(long id)
-    {
-      throw new NotImplementedException();
-    }
+    public async Task<IEnumerable<Comment>> GetByPostId(long postId) => await _context.Comments.Where(c => c.Post.Id == postId).ToListAsync();
 
-    public Task<IEnumerable<Comment>> GetByPostId(long postId)
-    {
-      throw new NotImplementedException();
-    }
+    public async Task Update(Comment comment) => _context.Comments.Update(comment);
 
-    public Task SaveChanges()
-    {
-      throw new NotImplementedException();
-    }
+    public async Task Delete(Comment comment) => _context.Comments.Remove(comment);
 
-    public Task Update(Comment comment)
-    {
-      throw new NotImplementedException();
-    }
+    public async Task SaveChanges() => await _context.SaveChangesAsync();
 }

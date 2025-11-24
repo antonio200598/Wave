@@ -7,9 +7,9 @@ public class WaveDbContext  : DbContext
 {
       public WaveDbContext(DbContextOptions<WaveDbContext> options) : base(options){ }
 
-      public DbSet<User> Users => Set<User>();
+      public DbSet<User> User => Set<User>();
 
-      public DbSet<Post> Posts => Set<Post>();
+      public DbSet<Post> Post => Set<Post>();
 
       public DbSet<Comment> Comments => Set<Comment>();
 

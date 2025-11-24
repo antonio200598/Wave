@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using Wave.API.Domain.Entities;
 using Wave.API.Domain.Interfaces;
 using Wave.API.Infrastructure.Persistence;
@@ -10,41 +11,20 @@ public class UserRepository : IUserRepository
 
     public UserRepository(WaveDbContext context)
     {
-      _context = context;
+        _context = context;
     }
 
-    public Task Add(User user)
-    {
-      throw new NotImplementedException();
-    }
+    public async Task Add(User user) => await _context.User.AddAsync(user);
 
-    public Task Delete(User user)
-    {
-      throw new NotImplementedException();
-    }
+    public async Task<IEnumerable<User>> GetAll() => await _context.User.ToListAsync();
 
-    public Task<IEnumerable<User>> GetAll()
-    {
-      throw new NotImplementedException();
-    }
+    public async Task<User?> GetByEmail(string email) => await _context.User.FirstOrDefaultAsync(u => u.Email == email);
 
-    public Task<User?> GetByEmail(string email)
-    {
-      throw new NotImplementedException();
-    }
+    public async Task<User?> GetById(long id) => await _context.User.FirstOrDefaultAsync(u => u.Id == id);
 
-    public Task<User?> GetById(long id)
-    {
-      throw new NotImplementedException();
-    }
+    public async Task Update(User user)  => _context.User.Update(user);
 
-    public Task SaveChanges()
-    {
-      throw new NotImplementedException();
-    }
+    public async Task Delete(User user) => _context.User.Remove(user);
 
-    public Task Update(User user)
-    {
-      throw new NotImplementedException();
-    }
+    public async Task SaveChanges() => await _context.SaveChangesAsync();
 }
