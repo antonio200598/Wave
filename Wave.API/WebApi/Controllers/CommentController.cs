@@ -55,7 +55,10 @@ public class CommentController : ControllerBase
             Id = newComment.Id,
             Content = newComment.Content,
             PostId = newComment.PostId,
-            UserId = newComment.UserId
+            PostTitle = post.Title,
+            PostContent = post.Content,
+            UserId = newComment.UserId,
+            UserName = user.Name
         });
     }
 
@@ -85,7 +88,26 @@ public class CommentController : ControllerBase
         if (comment == null)
           return NotFound();
 
-        return Ok(comment);
+        var post = await _postRepository.GetById(comment.PostId);
+        
+        if (post == null)
+          return NotFound();
+
+        var user = await _userRepository.GetById(comment.UserId);
+        
+        if (user == null)
+          return NotFound();
+
+        return Ok(new 
+        { 
+            Id = comment.Id, 
+            Content = comment.Content, 
+            UserId = comment.UserId, 
+            Username = user.Name, 
+            PostId = comment.PostId, 
+            PostTitle = post.Title, 
+            PostContent = post.Content
+        });
     }
 
     [HttpPost("update/{id}")]
@@ -103,7 +125,7 @@ public class CommentController : ControllerBase
 
         await _commentRepository.SaveChanges();
 
-        return Ok(existingComment);
+        return Ok("Comentário atualizado com sucesso");
     }
 
     [HttpPost("delete/{id}")]
@@ -118,6 +140,6 @@ public class CommentController : ControllerBase
 
         await _commentRepository.SaveChanges();
 
-        return NoContent();
+        return Ok("Comentário deletado com sucesso");
     }
 }
