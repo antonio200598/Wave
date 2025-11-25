@@ -11,28 +11,51 @@ namespace Wave.API.WebApi.Controllers;
 public class PostController : ControllerBase
 {
     private readonly IPostRepository _postRepository;
+    private readonly IUserRepository _userRepository;
 
-    public PostController(IPostRepository postRepository) => _postRepository = postRepository;
+    public PostController(IPostRepository postRepository, IUserRepository userRepository)
+    {
+        _postRepository = postRepository;
+        _userRepository = userRepository;
+    }
 
     [HttpPost("create")]
     public async Task<IActionResult> CreatePost(CreatePostRequest request)
     {
+        User user = await _userRepository.GetById(request.UserId);
+
         var newPost = new Post
         {
             Title = request.Title,
             Content = request.Content,
-            User = new User { Id = request.UserId }
+            User = user,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
         };
 
-        return Ok();    
+        await _postRepository.Add(newPost);
+
+        await _postRepository.SaveChanges();
+
+        return Ok("Postagem criada com sucesso");    
     }
 
     [HttpGet("get/all")]
     public async Task<IActionResult> GetAllPosts()
-    { 
+    {
         var posts = await _postRepository.GetAll();
-      
-        return Ok(posts);
+
+        var allPosts = posts.Select(x => new
+        {
+            Id = x.Id,
+            Title = x.Title,
+            Content = x.Content,
+            User = new { Id = x.UserId},
+            CreationDate = x.CreatedAt,
+            UpdateDate = x.UpdatedAt
+        });
+
+        return Ok(allPosts);
     }
 
     [HttpPost("update")]
@@ -68,6 +91,6 @@ public class PostController : ControllerBase
 
         await _postRepository.SaveChanges();
 
-        return NoContent();
+        return Ok("Postagem Deletada com sucesso");
     }
 }
