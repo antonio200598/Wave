@@ -4,6 +4,7 @@ using System.Reflection.Metadata.Ecma335;
 using Wave.API.Application.DTOs;
 using Wave.API.Domain.Entities;
 using Wave.API.Domain.Interfaces;
+using Wave.API.Infrastructure.Repositories;
 
 namespace Wave.API.WebApi.Controllers;
 
@@ -12,35 +13,68 @@ namespace Wave.API.WebApi.Controllers;
 public class CommentController : ControllerBase
 {
     private readonly ICommentRepository _commentRepository;
+    private readonly IPostRepository _postRepository;
+    private readonly IUserRepository _userRepository;
 
-    public CommentController(ICommentRepository commentRepository) => _commentRepository = commentRepository;
+    public CommentController(ICommentRepository commentRepository, IPostRepository postRepository, IUserRepository userRepository)
+    {
+        _commentRepository = commentRepository;
+        _postRepository = postRepository;
+        _userRepository = userRepository;
+    }
 
     [HttpPost("create")]
     public async Task<IActionResult> CreateComment(CreateCommentRequest request)
     {
-        var existingComment = await _commentRepository.GetAll();
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        var post = await _postRepository.GetById(request.PostId);
+        if (post == null)
+            return NotFound();
+
+        var user = await _userRepository.GetById(request.UserId);
+        if (user == null)
+            return NotFound();
 
         var newComment = new Comment
         {
             Content = request.Content,
+            PostId = request.PostId,
+            UserId = request.UserId,
             CreatedAt = DateTime.UtcNow,
-            Post = new Post { Id = request.PostId },
-            User = new User { Id = request.UserId }
+            UpdatedAt = DateTime.UtcNow
         };
 
         await _commentRepository.Add(newComment);
       
         await _commentRepository.SaveChanges();
 
-        return CreatedAtAction(nameof(GetCommentById), new { id = newComment.Id }, newComment);
+        return CreatedAtAction(nameof(CreateComment),new { id = newComment.Id },
+        new {
+            Id = newComment.Id,
+            Content = newComment.Content,
+            PostId = newComment.PostId,
+            UserId = newComment.UserId
+        });
     }
 
     [HttpGet("get/all")]
     public async Task<IActionResult> GetAllComments()
     {
         var comments = await _commentRepository.GetAll();
-      
-        return Ok(comments);
+
+        var allComments = comments.Select(x => new
+        {
+            Id = x.Id,
+            Content = x.Content,
+            Post = new { Id = x.PostId },
+            User = new { Id = x.UserId },
+            CreationDate = x.CreatedAt,
+            UpdateDate = x.UpdatedAt
+        });
+
+        return Ok(allComments);
     }
 
     [HttpGet("get/{id}")]

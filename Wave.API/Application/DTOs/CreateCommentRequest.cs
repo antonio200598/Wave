@@ -9,7 +9,5 @@ public record CreateCommentRequest
     [Required]
     long PostId,
     [Required]
-    string Content,
-    [Required]
-    string CreatedAt
+    string Content
 );
