@@ -1,6 +1,12 @@
 using Microsoft.EntityFrameworkCore;
+using Wave.API.Application.Services;
 using Wave.API.Infrastructure.Persistence;
 using Wave.API.Infrastructure.Repositories;
+using Microsoft.AspNetCore.Authentication.JwtBearer; // Adicione esta linha no topo do arquivo
+using Microsoft.IdentityModel.Tokens; // Adicione esta linha no topo do arquivo
+using System.Text; // Adicione esta linha no topo do arquivo
+
+
 
 namespace Wave.API.WebApi
 {
@@ -20,9 +26,26 @@ namespace Wave.API.WebApi
       builder.Services.AddEndpointsApiExplorer();
       builder.Services.AddSwaggerGen();
 
-      builder.Services.AddScoped<Domain.Interfaces.IUserRepository,UserRepository>();
-      builder.Services.AddScoped<Domain.Interfaces.IPostRepository,PostRepository>();
-      builder.Services.AddScoped<Domain.Interfaces.ICommentRepository,CommentRepository>();
+      builder.Services.AddScoped<Domain.Interfaces.IUserRepository, UserRepository>();
+      builder.Services.AddScoped<Domain.Interfaces.IPostRepository, PostRepository>();
+      builder.Services.AddScoped<Domain.Interfaces.ICommentRepository, CommentRepository>();
+      builder.Services.AddScoped<Domain.Interfaces.IUserService, UserService>();
+
+      builder.Services.AddAuthentication("Bearer").AddJwtBearer(options =>
+      {
+          options.RequireHttpsMetadata = false;
+          options.SaveToken = true;
+
+          options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+          {
+            ValidateIssuer = false,
+            ValidateAudience = false,
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(
+                  Encoding.ASCII.GetBytes(builder.Configuration["Jwt:Secret"])
+              ),
+          };
+      });
 
       var app = builder.Build();
 
@@ -35,8 +58,8 @@ namespace Wave.API.WebApi
 
       app.UseHttpsRedirection();
 
+      app.UseAuthentication();
       app.UseAuthorization();
-
 
       app.MapControllers();
 

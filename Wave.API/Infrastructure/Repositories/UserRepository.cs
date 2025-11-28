@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Wave.API.Application.DTOs;
 using Wave.API.Domain.Entities;
 using Wave.API.Domain.Interfaces;
 using Wave.API.Infrastructure.Persistence;

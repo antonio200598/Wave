@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+using Wave.API.Application.DTOs;
 using Wave.API.Domain.Entities;
 
 namespace Wave.API.Domain.Interfaces;

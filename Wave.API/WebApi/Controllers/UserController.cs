@@ -12,8 +12,13 @@ namespace Wave.API.WebApi.Controllers;
 public class UserController : ControllerBase
 {
     private readonly IUserRepository _userRepository;
+    private readonly IUserService _userService;
 
-    public UserController(IUserRepository userRepository) => _userRepository = userRepository;
+    public UserController(IUserRepository userRepository, IUserService userService)
+    {
+        _userRepository = userRepository,
+        _userService = userService;
+    }
 
     [HttpPost("create")]
     public async Task<IActionResult> CreateUser(CreateUserRequest request)
@@ -41,12 +46,39 @@ public class UserController : ControllerBase
         return CreatedAtAction(nameof(CreateUser), new { id = newUser.Id }, newUser);
     }
 
+    [HttpGet("get/{id}")]
+    public async Task<IActionResult> GetUserById(long id)
+    {
+        var user = await _userRepository.GetById(id);
+
+        if (user == null)
+            return NotFound();
+        
+        return Ok(user);
+    }
+
     [HttpGet("get/all")]
     public async Task<IActionResult> GetAllUsers()
     {
         var users = await _userRepository.GetAll();
 
         return Ok(users);
+    }
+
+    [HttpPost("login")]
+    public async Task<AuthResponse> LoginUser(LoginRequest request)
+    {
+        var user = await _userRepository.GetByEmail(request.Email);
+
+        if (user == null)
+          return new AuthResponse(null, "Usuário ou senha inválidos.");
+
+        if (!_userService.VerifyPassword(request.Password, user.PasswordHash))
+          return new AuthResponse(null, "Usuário ou senha inválidos.");
+
+        var token = _userService.GenerateJwtToken(user);
+
+        return new AuthResponse(token, null);       
     }
 
     [HttpPost("update")]
